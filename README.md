@@ -57,3 +57,17 @@ streamlit run app/app.py
 
 Predictions are statistical indicators derived from a limited dataset. They never
 replace the judgment of a healthcare professional or a qualified counselor.
+
+## Étape 5 — Orchestration et application
+
+Le DAG `student_mental_health_pipeline` nettoie les données, crée un partage stratifié, optimise les trois modèles, évalue le meilleur sur le jeu de test et sauvegarde le pipeline complet. Il est planifié chaque lundi à 7 h (Africa/Casablanca). Airflow conserve l’état des tâches, leurs journaux et retente une tâche en échec une fois.
+
+L’application Streamlit affiche les métriques et la matrice de confusion produites par Airflow. Elle permet aussi d’importer un fichier CSV contenant les variables explicatives et de consulter les risques prédits.
+
+Depuis la racine du projet :
+
+```bash
+docker compose up --build airflow streamlit
+```
+
+Ouvrir Airflow sur `http://localhost:8080` et l’application sur `http://localhost:8501`. Le compte administrateur Airflow est généré au premier démarrage; consulter `docker compose logs airflow` pour trouver le mot de passe. Le pipeline applique l’imputation, l’encodage et la standardisation dans les modèles, après le partage des données, afin d’éviter les fuites entre entraînement et test. Les prédictions sont des indicateurs statistiques pour orienter une revue de soutien; elles ne constituent pas un diagnostic.

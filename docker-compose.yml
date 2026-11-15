@@ -5,3 +5,31 @@ services:
       - "8888:8888"
     volumes:
       - .:/app
+
+  streamlit:
+    build: .
+    command: ["streamlit", "run", "app/app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+
+  airflow:
+    image: apache/airflow:3.4.0
+    command: standalone
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+      _PIP_ADDITIONAL_REQUIREMENTS: "pandas scikit-learn joblib matplotlib seaborn"
+    volumes:
+      - airflow_data:/opt/airflow
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - ./models:/opt/airflow/models
+      - ./reports:/opt/airflow/reports
+
+volumes:
+  airflow_data:
